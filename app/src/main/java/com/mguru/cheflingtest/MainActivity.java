@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -55,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private CustomTimePickerDialog customTimePickerDialog;
     private ImageView recipeImageView, cameraIconImageView;
     private EditText recipeNameEditText, notesEditText;
-    private TextView recipeTypeTextView, beginnerTextView, sousChefTextView, masterTextView;
+    private TextView recipeTypeTextView, beginnerTextView, sousChefTextView, masterTextView, cookingTimeTextView, servesTextView;
     private LinearLayout cookingTimeGroupLayout, servesGroupLayout, nextButtonGroupLayout;
     private RelativeLayout viewGroupLayout;
     private Typeface typeface;
@@ -64,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private int position;
     private static final int CAMERA_CAPTURE_IMAGE_REQUEST_CODE = 100;
     private static final int GALLERY_IMAGE_REQUEST_CODE = 101;
+    private static final int CROP_PIC = 102;
     private Uri fileUri;
     private boolean isAllPermissionGranted;
     private String imageLocation, recipeName, recipeType, servesValue, cookingTime;
@@ -88,6 +90,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         beginnerTextView = (TextView) findViewById(R.id.beginner_textview);
         sousChefTextView = (TextView) findViewById(R.id.sous_chef_textview);
         masterTextView = (TextView) findViewById(R.id.master_textview);
+        cookingTimeTextView = (TextView) findViewById(R.id.cooking_time_text_view);
+        servesTextView = (TextView) findViewById(R.id.serve_text_view);
         cookingTimeGroupLayout = (LinearLayout) findViewById(R.id.cooking_time_group_layout);
         servesGroupLayout = (LinearLayout) findViewById(R.id.serves_group_layout);
         nextButtonGroupLayout = (LinearLayout) findViewById(R.id.next_button_group_layout);
@@ -172,8 +176,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     TimePickerDialog.OnTimeSetListener onTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
         @Override
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-            cookingTime = hourOfDay + ":" + minute;
-            Toast.makeText(MainActivity.this, "You have selected the time " + hourOfDay + ":" + minute, Toast.LENGTH_SHORT).show();
+
+            if (hourOfDay > 12) {
+                cookingTime = String.valueOf(hourOfDay - 12) + ":" + (String.valueOf(minute) + " PM");
+            } else if (hourOfDay == 12) {
+                cookingTime = "12" + ":" + (String.valueOf(minute) + " PM");
+            } else if (hourOfDay < 12) {
+                if (hourOfDay != 0) {
+                    cookingTime = String.valueOf(hourOfDay) + ":" + (String.valueOf(minute) + " AM");
+                } else {
+                    cookingTime = "12" + ":" + (String.valueOf(minute) + " AM");
+                }
+            }
+            cookingTimeTextView.setText(cookingTime);
         }
     };
 
@@ -272,7 +287,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onClick(View v) {
                 servesDialog.dismiss();
                 servesValue = servesArray[position];
-                Toast.makeText(MainActivity.this, "You have selected the value " + servesArray[position], Toast.LENGTH_SHORT).show();
+                servesTextView.setText(servesValue);
+                //Toast.makeText(MainActivity.this, "You have selected the value " + servesArray[position], Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -409,9 +425,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Uri selectedImageUri = data.getData();
                 if (null != selectedImageUri) {
                     String path = getPathFromURI(selectedImageUri);
-                    Bitmap bitmap = BitmapFactory.decodeFile(path);
-                    setRecipeImage(bitmap);
+                    performCrop(selectedImageUri);
                     imageLocation = path;
+                }
+            } else if (requestCode == CROP_PIC) {
+                // get the returned data
+                Bundle extras = data.getExtras();
+                if (extras != null) {
+                    Bitmap thePic = extras.getParcelable("data");
+                    //recipeImageView.setImageBitmap(thePic);
+                    MethodUtils.saveToInternalStorage(thePic);
+                    Toast.makeText(MainActivity.this, "Image Successfully saved", Toast.LENGTH_SHORT).show();
                 }
             }
         } else if (resultCode == RESULT_CANCELED) {
@@ -426,12 +450,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     */
     private void previewCapturedImage() {
         try {
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inSampleSize = 8;
-            final Bitmap bitmap = BitmapFactory.decodeFile(fileUri.getPath(), options);
-            setRecipeImage(bitmap);
-            MethodUtils.saveToInternalStorage(bitmap);
-            imageLocation = fileUri.getPath();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inSampleSize = 8;
+                    performCrop(fileUri);
+                    imageLocation = fileUri.getPath();
+                }
+            });
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
@@ -568,6 +595,39 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             isAllPermissionGranted = true;
         } else {
             EasyPermissions.requestPermissions(this, "Application needs permission to access your storage", 100, perms);
+        }
+    }
+
+    /**
+     * Method used to crop the selected image
+     *
+     * @param fileUri
+     */
+    private void performCrop(Uri fileUri) {
+        // take care of exceptions
+        try {
+            // call the standard crop action intent (the user device may not
+            // support it)
+            Intent cropIntent = new Intent("com.android.camera.action.CROP");
+            // indicate image type and Uri
+            cropIntent.setDataAndType(fileUri, "image/*");
+            // set crop properties
+            cropIntent.putExtra("crop", "true");
+            // indicate aspect of desired crop
+            cropIntent.putExtra("aspectX", 2);
+            cropIntent.putExtra("aspectY", 2);
+            // indicate output X and Y
+            cropIntent.putExtra("outputX", 256);
+            cropIntent.putExtra("outputY", 256);
+            // retrieve data on return
+            cropIntent.putExtra("return-data", true);
+            // start the activity - we handle returning in onActivityResult
+            startActivityForResult(cropIntent, CROP_PIC);
+        }
+        // respond to users whose devices do not support the crop action
+        catch (ActivityNotFoundException anfe) {
+            Toast toast = Toast.makeText(this, "This device doesn't support the crop action!", Toast.LENGTH_SHORT);
+            toast.show();
         }
     }
 }
