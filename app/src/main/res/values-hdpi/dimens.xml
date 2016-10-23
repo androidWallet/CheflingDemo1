@@ -1,0 +1,31 @@
+<resources>
+    <dimen name="recipe_image_height">150dp</dimen>
+    <dimen name="camera_height">50dp</dimen>
+    <dimen name="camera_width">75dp</dimen>
+
+    <dimen name="padding_10">10dp</dimen>
+    <dimen name="padding_14">14dp</dimen>
+    <dimen name="margin_10">10dp</dimen>
+    <dimen name="margin_14">14dp</dimen>
+    <dimen name="edit_text_height">36dp</dimen>
+    <dimen name="note_edit_text_height">48dp</dimen>
+    <dimen name="text_view_height">36dp</dimen>
+    <dimen name="text_size">14sp</dimen>
+    <dimen name="serve_image_size">24dp</dimen>
+    <dimen name="cooking_image_size">24dp</dimen>
+    <dimen name="next_button_image_size">16dp</dimen>
+    <dimen name="listview_min_height">100dp</dimen>
+    <dimen name="listview_item_height">36dp</dimen>
+    <dimen name="dialog_width">275dp</dimen>
+
+    <!-- For drawable resource directory -->
+    <dimen name="dotted_line_radius">5dp</dimen>
+    <dimen name="dash_gap">5dp</dimen>
+    <dimen name="dash_width">5dp</dimen>
+    <dimen name="padding">5dp</dimen>
+    <dimen name="stroke_width">1dp</dimen>
+    <dimen name="corner_radius_3">3dp</dimen>
+    <dimen name="corner_radius_5">5dp</dimen>
+
+
+</resources>

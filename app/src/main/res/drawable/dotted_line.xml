@@ -1,0 +1,18 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape>
+            <solid android:color="@color/background" />
+            <corners android:radius="@dimen/dotted_line_radius"></corners>
+            <stroke
+                android:width="@dimen/stroke_width"
+                android:color="@color/dotted_line"
+                android:dashGap="@dimen/dash_gap"
+                android:dashWidth="@dimen/dash_width" />
+            <padding
+                android:bottom="@dimen/padding"
+                android:left="@dimen/padding"
+                android:right="@dimen/padding"
+                android:top="@dimen/padding" />
+        </shape>
+    </item>
+</layer-list>

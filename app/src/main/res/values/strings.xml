@@ -1,0 +1,49 @@
+<resources>
+    <string name="app_name">Maniruddin1</string>
+
+    <!-- For screen  -->
+    <string name="recipe_name">Type the recipe name</string>
+    <string name="recipe_type">Choose your recipe type</string>
+    <string name="difficulty_level_button1">Beginner</string>
+    <string name="difficulty_level_button2">Sous Chef</string>
+    <string name="difficulty_level_button3">Master</string>
+    <string name="serves">Serves</string>
+    <string name="cooking_time">Cooking Times</string>
+    <string name="notes">Notes, tell us the story behind it.</string>
+    <string name="next">Next</string>
+    <string name="done">Done</string>
+    <string name="cancel">Cancel</string>
+
+    <!-- For camera dialog -->
+    <string name="choose_option">Choose your option</string>
+    <string name="gallery">Gallery</string>
+    <string name="camera">Camera</string>
+
+    <!-- For feedback screen -->
+    <string name="name">type your name</string>
+    <string name="email">type your email</string>
+    <string name="message">type your message</string>
+    <string name="send">Send</string>
+
+    <!-- For recipe type -->
+    <string-array name="recipe_type_item_array">
+        <item>Breakfast</item>
+        <item>Dessert</item>
+        <item>Salads</item>
+    </string-array>
+
+    <!-- For Serves -->
+    <string-array name="serves_item_array">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10+</item>
+    </string-array>
+
+</resources>

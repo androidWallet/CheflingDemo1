@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#85bb38</color>
+    <color name="colorPrimaryDark">#6F9D2F</color>
+    <color name="colorAccent">#FF4081</color>
+
+    <color name="white">#ffffff</color>
+    <color name="dotted_line">#d2d2d2</color>
+    <color name="background">#f4f4f4</color>
+    <color name="text_color">#333333</color>
+    <color name="warning_error_color">#ee7854</color>
+
+</resources>
